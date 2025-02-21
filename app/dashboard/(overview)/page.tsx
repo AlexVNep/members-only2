@@ -5,7 +5,7 @@
 
 export default function DashboardPage() {
   return (
-    <div className="">
+    <div className="flex flex-col gap-5 items-center justify-between">
       <h1 className="text-4xl font-bold">Welcome to the Dashboard</h1>
       <p className="text-lg">
         Today is{" "}
