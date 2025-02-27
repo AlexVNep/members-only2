@@ -4,10 +4,8 @@ import { signIn, signOut } from "@/auth";
 import { revalidatePath } from "next/cache";
 import connect from "@/lib/db";
 import Member from "@/app/models/Members";
-import { AuthError } from "next-auth";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { redirect } from "next/navigation";
 
 export async function getUserByEmail(email: string) {
   try {
@@ -18,11 +16,6 @@ export async function getUserByEmail(email: string) {
     console.log(error);
     return null;
   }
-}
-
-export async function login(provider: string) {
-  await signIn(provider, { redirectTo: "/" });
-  revalidatePath("/");
 }
 
 export async function logout() {
@@ -86,23 +79,24 @@ export async function RegisterWithCreds(
   }
 }
 
+// type LoginResponse = { error?: string };
+
 export async function loginWithCreds(formData: FormData) {
   try {
-    await signIn("credentials", {
+    const response = await signIn("credentials", {
       email: formData.get("email"),
       password: formData.get("password"),
-      redirectTo: "/dashboard", // Prevent automatic redirect
+      redirect: false, // Prevent automatic redirect
     });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      console.error(
-        error.type === "CredentialsSignin"
-          ? "Invalid credentials."
-          : "Something went wrong."
-      );
-      return;
+
+    if (!response || response.error) {
+      console.error("Invalid credentials.");
+      return { error: "Invalid credentials." };
     }
 
-    redirect("/");
+    return { sucess: true }; // Success case, return an empty object
+  } catch (error) {
+    console.error("Something went wrong.", error);
+    return { error: "Something went wrong. Please try again later." };
   }
 }

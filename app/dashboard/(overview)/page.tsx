@@ -20,7 +20,7 @@ export default async function DashboardPage() {
       </p>
       <div className="">
         <div className="mt-8">
-          <p className="text-lg">Hello!</p>
+          <p className="text-lg">Hello, {session?.user?.email}!</p>
         </div>
       </div>
     </div>

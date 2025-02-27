@@ -1,9 +1,11 @@
-import { auth } from "@/auth";
+"use client";
+
 import Link from "next/link";
 import Logout from "../ui/Logout";
+import { useSession } from "next-auth/react";
 
-export default async function Navbar() {
-  const session = await auth();
+export default function Navbar() {
+  const { data: session, status } = useSession();
   return (
     <nav className="border-b bg-background w-full flex items-center">
       <div className="flex w-full items-center justify-between my-4">
@@ -12,7 +14,13 @@ export default async function Navbar() {
         </Link>
 
         <div className="flex items-center gap-x-5">
-          {session && <Link href="/dashboard">Dashboard</Link>}
+          {status === "loading" ? (
+            <p>Loading...</p> // Show a loading state while session loads
+          ) : session ? (
+            <>
+              <Link href="/dashboard">Dashboard</Link>
+            </>
+          ) : null}
           <Link className="" href="/middleware">
             Middleware
           </Link>
@@ -22,7 +30,7 @@ export default async function Navbar() {
         </div>
 
         <div className="flex items-center gap-x-5">
-          {!session?.user ? (
+          {!session ? (
             <Link href="/sign-in">
               <div className="bg-blue-600 text-white text-sm px-4 py-2 rounded-sm">
                 Login

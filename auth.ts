@@ -3,7 +3,6 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import Member from "./app/models/Members";
 import connect from "./lib/db";
-// import { redirect } from "next/navigation";
 import { z } from "zod";
 
 async function getUser(email: string) {
@@ -18,22 +17,6 @@ async function getUser(email: string) {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  pages: {
-    signIn: "/login",
-  },
-  callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
-      if (isOnDashboard) {
-        if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
-      } else if (isLoggedIn) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
-      }
-      return true;
-    },
-  },
   session: { strategy: "jwt" },
   providers: [
     Credentials({
@@ -46,6 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
           const user = await getUser(email);
+
           if (!user || !user.password) return null;
 
           const passwordsMatch = await bcrypt.compare(password, user.password);
@@ -59,26 +43,3 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
 });
-
-// if (!user) {
-//   // If the user does not exist, create one
-//   const hashedPassword = await bcrypt.hash(password, 10);
-//   user = await Member.create({
-//     firstName: fname,
-//     lastName: lname,
-//     username,
-//     email,
-//     password: hashedPassword,
-//   });
-// } else {
-//   // Compare the entered password with the stored hashed password
-//   const isMatch = await bcrypt.compare(
-//     password,
-//     user.password as string
-//   );
-//   if (!isMatch) {
-//     throw new Error("Incorrect password.");
-//   }
-// }
-
-// return user;

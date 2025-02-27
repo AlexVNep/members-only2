@@ -1,16 +1,38 @@
-import { auth } from "@/auth";
+"use client";
+import { useSession } from "next-auth/react";
+// import { auth } from "@/auth";
 import AuthButton from "./AuthButton";
 import { loginWithCreds } from "@/actions/auth";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-export default async function LoginForm() {
-  const session = await auth();
+export default function LoginForm() {
+  const router = useRouter();
+  const { data: session, status, update } = useSession();
+  const [error, setError] = useState<string | null>(null);
 
-  if (session?.user) redirect("/");
+  console.log(session, status);
+
+  async function handleSubmit(formData: FormData) {
+    setError(null);
+    const result = await loginWithCreds(formData);
+
+    if (result?.error) {
+      setError("Invalid credentials. Please try again.");
+      return;
+    }
+
+    // ✅ Force update session so the UI updates immediately
+    await update();
+
+    // ✅ Redirect to dashboard
+    router.push("/dashboard");
+  }
   return (
     <div className="">
-      <form action={loginWithCreds} className="w-full flex flex-col gap-4">
+      <form action={handleSubmit} className="w-full flex flex-col gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-200">
             Email
@@ -45,6 +67,7 @@ export default async function LoginForm() {
             Register Here.
           </Link>
         </div>
+        {error && <p className="text-red-500">{error}</p>}
       </form>
     </div>
   );
