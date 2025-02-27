@@ -1,28 +1,25 @@
 // import { useRouter } from "next/navigation";
 // import { useEffect } from "react";
 
+import Post from "@/app/components/Post";
 import { auth } from "@/auth";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const session = await auth();
   console.log(session);
   return (
-    <div className="flex flex-col gap-5 items-center justify-between">
-      <h1 className="text-4xl font-bold">Welcome to the Dashboard</h1>
-      <p className="text-lg">
-        Today is{" "}
-        {new Date().toLocaleDateString("en-US", {
-          weekday: "long",
-          month: "long",
-          day: "numeric",
-        })}
-        .
-      </p>
-      <div className="">
-        <div className="mt-8">
-          <p className="text-lg">Hello, {session?.user?.email}!</p>
-        </div>
+    <div className="flex flex-col gap-5 mt-5 items-center justify-between">
+      <div className="flex gap-40 justify-around">
+        <h1 className="text-4xl font-bold">Dashboard</h1>
+        <Link href="/postform">
+          <div className="rounded-md w-full px-12 py-3 text-sm font-medium text-white bg-blue-600">
+            Add New Post
+          </div>
+        </Link>
       </div>
+
+      <Post />
     </div>
   );
 }

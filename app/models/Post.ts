@@ -7,7 +7,7 @@ export interface IPost extends Document {
   title: string;
   message: string;
   createdBy: string;
-  timestamp: string;
+  createdAt: Date;
 }
 
 const postSchema = new Schema<IPost>(

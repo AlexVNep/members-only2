@@ -6,7 +6,7 @@ import connect from "@/lib/db";
 import Member from "@/app/models/Members";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import Post from "@/app/models/Post";
+import Post, { IPost } from "@/app/models/Post";
 
 export async function getUserByEmail(email: string) {
   try {
@@ -142,5 +142,17 @@ export async function createPost(
   } catch (error) {
     console.error("Error creating user:", error);
     return { error: "Something went wrong. Please try again later." };
+  }
+}
+
+export async function getPosts(): Promise<IPost[]> {
+  try {
+    console.log("Fetching posts");
+    const data = await Post.find({}).exec();
+    console.log("Posts fetched", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching decisions:", error);
+    return [];
   }
 }
