@@ -24,10 +24,10 @@ export default function LoginForm() {
       return;
     }
 
-    // ✅ Force update session so the UI updates immediately
+    // Force update session so the UI updates immediately
     await update();
 
-    // ✅ Redirect to dashboard
+    // Redirect to dashboard
     router.push("/dashboard");
   }
   return (
