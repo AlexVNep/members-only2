@@ -6,6 +6,7 @@ import connect from "@/lib/db";
 import Member from "@/app/models/Members";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import Post from "@/app/models/Post";
 
 export async function getUserByEmail(email: string) {
   try {
@@ -97,6 +98,49 @@ export async function loginWithCreds(formData: FormData) {
     return { sucess: true }; // Success case, return an empty object
   } catch (error) {
     console.error("Something went wrong.", error);
+    return { error: "Something went wrong. Please try again later." };
+  }
+}
+
+type createPostResponse = { success: true } | { error: string };
+
+export async function createPost(
+  formData: FormData
+): Promise<createPostResponse> {
+  const postFormSchema = z.object({
+    title: z.string().trim(),
+    message: z.string().trim(),
+    createdBy: z.string().trim(),
+  });
+
+  const validatedFields = postFormSchema.safeParse({
+    title: formData.get("title"),
+    message: formData.get("message"),
+    createdBy: formData.get("createdBy"),
+  });
+
+  if (!validatedFields.success) {
+    console.error(
+      "Validation errors:",
+      validatedFields.error.flatten().fieldErrors
+    );
+    return { error: "Not validated" };
+  }
+
+  const { title, message, createdBy } = validatedFields.data;
+
+  await connect();
+
+  try {
+    await Post.create({
+      title,
+      message,
+      createdBy,
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error creating user:", error);
     return { error: "Something went wrong. Please try again later." };
   }
 }
