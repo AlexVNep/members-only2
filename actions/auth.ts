@@ -156,3 +156,22 @@ export async function getPosts(): Promise<IPost[]> {
     return [];
   }
 }
+
+export async function updateMembership(userEmail: string) {
+  try {
+    await connect();
+    const user = await Member.findOne({ email: userEmail });
+
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+
+    user.membership = true; // Update membership status
+    await user.save(); // Save the updated user
+
+    return { success: true, message: "Membership updated successfully!" };
+  } catch (error) {
+    console.error("Error updating membership", error);
+    return { success: false, message: "Failed to update membership" };
+  }
+}

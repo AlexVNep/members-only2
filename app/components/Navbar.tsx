@@ -21,8 +21,8 @@ export default function Navbar() {
               <Link href="/dashboard">Dashboard</Link>
             </>
           ) : null}
-          <Link className="" href="/middleware">
-            Middleware
+          <Link className="" href="/membership">
+            Membership
           </Link>
           <Link className="" href="/server">
             Server

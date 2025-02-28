@@ -33,6 +33,7 @@ const userSchema = new Schema<IUser>({
   },
   membership: {
     type: Boolean,
+    default: false,
   },
   password: {
     type: String,
