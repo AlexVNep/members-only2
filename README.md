@@ -1,36 +1,132 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Clubhouse Messaging App
 
-## Getting Started
+A private clubhouse messaging app built with **Next.js** and **Auth.js** for authentication, using **PostgreSQL** as the database. Users can sign up, create messages, and join the private club by entering a secret passcode. Admins can manage messages.
 
-First, run the development server:
+## Features
 
-```bash
+- User authentication with **Auth.js**
+- MongoDB database for storing users and messages
+- Secure password hashing using **bcrypt**
+- Membership system with a secret passcode
+- Role-based access control (Members & Admins)
+- Message creation and restricted viewing based on membership
+- Admins can delete messages
+
+## Tech Stack
+
+- **Next.js** (React framework)
+- **Auth.js** (Authentication)
+- **MongoDB** (Database)
+- **Mongoose** (ORM for database management)
+- **bcrypt** (Password hashing)
+- **Tailwind CSS** (Styling)
+
+---
+
+## Installation
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+- **Node.js** (>=16)
+- **npm** or **yarn**
+
+### 1. Clone the repository
+
+```sh
+git clone git@github.com:AlexVNep/members-only2.git
+cd clubhouse-messaging
+```
+
+### 2. Install dependencies
+
+```sh
+npm install
+# or
+yarn install
+```
+
+### 3. Set up environment variables
+
+Create a `.env.local` file in the root directory and add the following variables:
+
+```sh
+MONGODB_URL=your_db_url
+AUTH_SECRET=your_random_secret
+NEXTAUTH_URL=http://localhost:3000
+```
+
+### 4. Start the development server
+
+```sh
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app should now be running on `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Features Breakdown
 
-## Learn More
+### Authentication
 
-To learn more about Next.js, take a look at the following resources:
+- Uses **Auth.js** with credentials authentication (email + password)
+- Secure password hashing with **bcrypt**
+- Protected routes for members and admins
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### User Roles
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Non-members**: Can sign up, log in, and view messages (but not the author)
+- **Members**: Can view author emails on messages
+- **Admins**: Can delete messages
 
-## Deploy on Vercel
+### Membership System
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Users must enter a **secret passcode** to become a member
+- Membership status is stored in the database (`membership: true`)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Admin Privileges
+
+- Admins can delete messages
+- An admin can be assigned manually in the database or through a secret passcode
+
+---
+
+## API Routes
+
+### Authentication (`/api/auth`)
+
+Handled by **Auth.js**.
+
+---
+
+## How to Use
+
+1. **Sign up** on the website.
+2. **Log in** using your email and password.
+3. **Enter the secret passcode** on the membership page to become a member.
+4. **Create messages** once you’re a member.
+5. **Admins can delete messages** from the admin panel.
+
+---
+
+## Future Enhancements
+
+- Add real-time updates using WebSockets.
+- Implement OAuth (Google, GitHub) authentication.
+- Enhance UI with animations.
+
+---
+
+## License
+
+MIT License
+
+---
+
+## Contributing
+
+Contributions are welcome! Feel free to fork the repo and submit a pull request.
