@@ -10,6 +10,7 @@ export interface IUser extends Document {
   email: string;
   membership?: boolean;
   password?: string;
+  admin?: boolean;
 }
 
 const userSchema = new Schema<IUser>({
@@ -39,8 +40,11 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
   },
+  admin: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const Member: Model<IUser> =
-  models?.Member || model<IUser>("Member", userSchema);
-export default Member;
+const User: Model<IUser> = models?.User || model<IUser>("User", userSchema);
+export default User;

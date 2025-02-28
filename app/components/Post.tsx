@@ -1,4 +1,5 @@
-import { getPosts } from "@/actions/auth";
+"use server";
+import { deletePost, getPosts } from "@/actions/auth";
 import { auth } from "@/auth";
 import Member from "../models/Members";
 
@@ -7,6 +8,11 @@ export default async function Post() {
   const session = await auth();
   console.log(session);
   const user = await Member.findOne({ email: session?.user?.email });
+
+  async function deleteHandler(postId: string) {
+    "use server"; // Ensures the function runs on the server
+    await deletePost(postId);
+  }
 
   if (posts && posts.length > 0) {
     return posts.map((post, index) => (
@@ -21,6 +27,12 @@ export default async function Post() {
           )}
           <div>Date: {new Date(post.createdAt).toLocaleString()}</div>
         </div>
+        {user?.admin === true && (
+          <form action={deleteHandler}>
+            <input type="hidden" name="postId" value={post._id} />
+            <button type="submit">Delete</button>
+          </form>
+        )}
       </div>
     ));
   } else {

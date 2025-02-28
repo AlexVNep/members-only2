@@ -3,7 +3,7 @@
 import { signIn, signOut } from "@/auth";
 import { revalidatePath } from "next/cache";
 import connect from "@/lib/db";
-import Member from "@/app/models/Members";
+import User from "@/app/models/Members";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import Post, { IPost } from "@/app/models/Post";
@@ -11,7 +11,7 @@ import Post, { IPost } from "@/app/models/Post";
 export async function getUserByEmail(email: string) {
   try {
     connect();
-    const user = await Member.findOne({ email });
+    const user = await User.findOne({ email });
     return user;
   } catch (error) {
     console.log(error);
@@ -56,7 +56,7 @@ export async function RegisterWithCreds(
   const { firstName, lastName, username, email, password } =
     validatedFields.data;
 
-  const existingUser = await Member.findOne({ email });
+  const existingUser = await User.findOne({ email });
   if (existingUser) {
     console.error("Email already in use");
     return { error: "Email already in use" };
@@ -65,7 +65,7 @@ export async function RegisterWithCreds(
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    await Member.create({
+    await User.create({
       firstName,
       lastName,
       username,
@@ -148,9 +148,15 @@ export async function createPost(
 export async function getPosts(): Promise<IPost[]> {
   try {
     console.log("Fetching posts");
-    const data = await Post.find({}).exec();
-    console.log("Posts fetched", data);
-    return data;
+    const data = await Post.find({}).lean();
+    // Convert ObjectId to string
+    const posts = data.map((post) => ({
+      ...post,
+      _id: post._id.toString(), // Convert ObjectId to string
+    }));
+
+    console.log("Posts fetched", posts);
+    return posts;
   } catch (error) {
     console.error("Error fetching decisions:", error);
     return [];
@@ -160,7 +166,7 @@ export async function getPosts(): Promise<IPost[]> {
 export async function updateMembership(userEmail: string) {
   try {
     await connect();
-    const user = await Member.findOne({ email: userEmail });
+    const user = await User.findOne({ email: userEmail });
 
     if (!user) {
       return { success: false, message: "User not found" };
@@ -173,5 +179,40 @@ export async function updateMembership(userEmail: string) {
   } catch (error) {
     console.error("Error updating membership", error);
     return { success: false, message: "Failed to update membership" };
+  }
+}
+
+export async function updateAdminRoll(userEmail: string) {
+  try {
+    await connect(); // Ensure DB connection
+    const user = await User.findOne({ email: userEmail });
+
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+
+    user.admin = true; // Update membership status
+    await user.save(); // Save the updated user
+
+    return { success: true, message: "Membership updated successfully!" };
+  } catch (error) {
+    console.error("Error updating admin status", error);
+    return { success: false, message: "Failed to update admin status" };
+  }
+}
+
+export async function deletePost(postId: string) {
+  try {
+    await connect(); // Ensure DB connection
+    const deletedPost = await Post.findByIdAndDelete(postId);
+
+    if (!deletedPost) {
+      return { success: false, message: "Post not found" };
+    }
+
+    return { success: true, message: "Post deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    return { success: false, message: "Failed to delete post" };
   }
 }

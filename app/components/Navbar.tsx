@@ -24,8 +24,8 @@ export default function Navbar() {
           <Link className="" href="/membership">
             Membership
           </Link>
-          <Link className="" href="/server">
-            Server
+          <Link className="" href="/admin">
+            Admin
           </Link>
         </div>
 

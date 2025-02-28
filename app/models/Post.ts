@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 const { Schema, model, models } = mongoose;
 
 export interface IPost extends Document {
+  _id: string;
   title: string;
   message: string;
   createdBy: string;
@@ -12,6 +13,9 @@ export interface IPost extends Document {
 
 const postSchema = new Schema<IPost>(
   {
+    _id: {
+      type: String,
+    },
     title: {
       type: String,
       required: true,
